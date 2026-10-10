@@ -45,6 +45,11 @@
         default = { };
         description = "Configuration file that defines the context/root-menus for buildin labwc generator. For more detail check [labwc-menu man page](https://labwc.github.io/labwc-menu.5.html) and [reference file](https://github.com/labwc/labwc/blob/master/docs/menu.xml)";
       };
+      autostart = lib.mkOption {
+        type = lib.types.separatedString "&";
+        default = [ ];
+        description = "List of commands that will be executed as shell script at the start of labwc";
+      };
     };
   };
 
@@ -60,6 +65,10 @@
       "menu.xml" = {
         relPath = "${config.binName}_config/labwc/menu.xml";
         content = config.configFiles."menu.xml".content;
+      };
+      autostart = {
+        relPath = "${config.binName}_config/labwc/autostart";
+        content = pkgs.writeText "autostart" "${config.configFiles.autostart}";
       };
     };
     meta.maintainers = [ wlib.maintainers.lodwkobku ];
