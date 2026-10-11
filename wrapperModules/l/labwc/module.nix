@@ -30,6 +30,14 @@
     #     }
     #   '';
     # };
+    fonts = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [];
+      description = ''
+        Helper function for creating FONTCONFIG_FILE in env that helps in loading fonts that will be available for labwc.
+        Insert an list of nix packaged fonts.
+      '';
+    };
     configFiles = {
       "rc.xml" = lib.mkOption {
         type = wlib.types.file {
@@ -61,6 +69,11 @@
   config = {
     package = lib.mkDefault pkgs.labwc;
     env.XDG_CONFIG_DIRS = "${placeholder config.outputName}/${config.binName}_config";
+    envDefault = {
+      FONTCONFIG_FILE = pkgs.makeFontsConf {
+        fontDirectories = config.fonts;
+      };
+    };
     constructFiles = {
       "rc.xml" = {
         relPath = "${config.binName}_config/labwc/rc.xml";
