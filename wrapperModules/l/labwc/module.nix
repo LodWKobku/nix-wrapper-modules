@@ -68,7 +68,7 @@
 
   config = {
     package = lib.mkDefault pkgs.labwc;
-    env.XDG_CONFIG_DIRS = "${placeholder config.outputName}/${config.binName}_config";
+    flags."--config-dir" = "${placeholder config.outputName}/${config.binName}_config/labwc";
     envDefault = {
       FONTCONFIG_FILE = pkgs.makeFontsConf {
         fontDirectories = config.fonts;
