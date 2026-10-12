@@ -8,34 +8,44 @@
 {
   imports = [ wlib.modules.default ];
   options = {
-    # settings = lib.mkOption {
-    #   type =
-    #     with lib.types;
-    #     (attrsOf (
-    #       attrsOf (oneOf [
-    #         int
-    #         bool
-    #         str
-    #       ])
-    #     ));
-    #   default = { };
-    #   description = ''
-    #     Configuration options for imv. See
-    #     {manpage}`imv(5)`.
-    #   '';
-    #   example = lib.literalExpression ''
-    #     {
-    #       options.background = "ffffff";
-    #       aliases.x = "close";
-    #     }
-    #   '';
-    # };
     fonts = lib.mkOption {
       type = lib.types.listOf lib.types.package;
-      default = [];
+      default = [ ];
       description = ''
         Helper function for creating FONTCONFIG_FILE in env that helps in loading fonts that will be available for labwc.
         Insert an list of nix packaged fonts.
+      '';
+    };
+    cursor = lib.mkOption {
+      type = lib.types.submodule {
+        options = {
+          path = lib.mkOption {
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+            description = ''
+              Path that will be added to cursor search list
+              The path have to contain one or more dirs, where one of which is selected via `cursor.theme`
+              For cursors from nixpkgs this will likely be "''${pkgs.somepackage}/share/icons"
+            '';
+          };
+          theme = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = ''
+              Name of an cursor theme
+            '';
+          };
+          size = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = ''
+              Size of the cursor
+            '';
+          };
+        };
+      };
+      description = ''
+        Helper function for creating XCURSOR env variables, for managing cursor inside of labwc package.
       '';
     };
     configFiles = {
@@ -73,6 +83,9 @@
       FONTCONFIG_FILE = pkgs.makeFontsConf {
         fontDirectories = config.fonts;
       };
+      XCURSOR_PATH = lib.mkIf (config.cursor.path != null) config.cursor.path;
+      XCURSOR_THEME = lib.mkIf (config.cursor.theme != null) config.cursor.theme;
+      XCURSOR_SIZE = lib.mkIf (config.cursor.size != null) config.cursor.size;
     };
     constructFiles = {
       "rc.xml" = {
